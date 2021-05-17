@@ -19,6 +19,7 @@ public class Main {
   public static void main(String[] args) {
   boolean run = true;
   ArrayList<Pet> pets = new ArrayList<Pet>();
+  int searchCount = 0;
   
   // Populate default pet data
   Pet pet;
@@ -78,14 +79,52 @@ public class Main {
         break;
         // Search for existing Pets by name in pets arraylist
         case 5:
+            
+            System.out.println("Enter a name to search: ");
+            String searchName = select.next();
+            System.out.println();
+            
+            // Search pets arraylist for pets by name
+            for (int i = 0; i < pets.size(); i++) {
+                if(pets.get(i).getName().equals(searchName)){
+                    if (searchCount < 1){
+                        System.out.println("ID | Name | Age");
+                    }
+                    System.out.printf("%s %s %s\n",i, pets.get(i).getName(), pets.get(i).getAge());
+                    searchCount++;
+                }
+            }
+            // Print number of search results 
+            System.out.println(searchCount + " row(s) in the set.");
+            searchCount = 0;
+            
         break;
         // Search for existing Pets by age in pets arraylist
         case 6:
+            System.out.println("Enter an age to search: ");
+            int searchAge = select.nextInt();
+            System.out.println();
+            
+            // Search pets arraylist for pets by age
+            for (int i = 0; i < pets.size(); i++) {
+                if(pets.get(i).getAge() == searchAge){
+                    if (searchCount < 1){
+                        System.out.println("ID | Name | Age");
+                    }
+                    System.out.printf("%s %s %s\n",i, pets.get(i).getName(), pets.get(i).getAge());
+                    searchCount++;
+                }
+            }
+            
+            // Print number of search results 
+            System.out.println(searchCount + " row(s) in the set.");
+            searchCount = 0;
+            
         break;
         // Exit program
         case 7:
             run = false;
-            System.out.println("Your choice: " + userChoice + " Goodbye!");
+            System.out.println("Goodbye!");
         break;
         // If input is not an int between 1-7 direct user
         default:
