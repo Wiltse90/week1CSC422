@@ -57,14 +57,16 @@ public class Main {
         case 1:
             System.out.println("ID | Name | Age");
             for (int i = 0; i < pets.size(); i++) {
-                
+
                 System.out.printf("%s %s %s\n",i, pets.get(i).getName(), pets.get(i).getAge());
-                
+                searchCount++;
             }
+            System.out.println(searchCount + " row(s) in the set.");
+            searchCount = 0;
         break;
         // Add new Pet oject to pets array list
         case 2:
-            System.out.println("add pet (name, age): ");
+            System.out.println("add pet (name age): ");
             String petName = select.next();
             int petAge = select.nextInt();
             pet = new Pet(petName, petAge);
@@ -73,9 +75,28 @@ public class Main {
         break;
         // Update existing Pet in pets arraylist
         case 3:
+            System.out.println("Enter the pet ID to update: ");
+            int petID = select.nextInt();
+            System.out.println("Enter new name and age (name age): ");
+            
+            petName = select.next();
+            petAge = select.nextInt();
+            
+            String oldEntry = pets.get(petID).getName() + " " + pets.get(petID).getAge();
+            String newEntry = petName + " " + petAge;
+            
+            pets.get(petID).setName(petName);
+            pets.get(petID).setAge(petAge);
+            System.out.println(oldEntry + " was changed to " + newEntry + ".");
         break;
         // Remove existing Pet in pets arraylist
         case 4:
+            System.out.println("Enter the pet ID to remove: ");
+            petID = select.nextInt();
+            oldEntry = petID + " " + pets.get(petID).getName() + " " + pets.get(petID).getAge();
+            pets.remove(petID);
+            System.out.println(oldEntry + " was removed.");
+            
         break;
         // Search for existing Pets by name in pets arraylist
         case 5:
