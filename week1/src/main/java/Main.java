@@ -49,55 +49,85 @@ public class Main {
     
     // Read user input selection
     int userChoice = select.nextInt();
-    System.out.println("Your choice: " + userChoice);
+    System.out.println("\nYour choice: " + userChoice);
     
-    // Execute action bases on user input
+    // Execute action based on user input
     switch(userChoice) {
+        
         // Display all pets in pets arraylist
         case 1:
-            System.out.println("ID | Name | Age");
+            System.out.println("+-------------------------+"); // Table header
+            System.out.printf("| %-3s | %-10s | %-4s |%n","ID","NAME","AGE");
+            System.out.println("+-------------------------+");
             for (int i = 0; i < pets.size(); i++) {
-
-                System.out.printf("%s %s %s\n",i, pets.get(i).getName(), pets.get(i).getAge());
+                System.out.printf("| %3s | %-10s | %4s |%n",i, pets.get(i).getName(), pets.get(i).getAge());
                 searchCount++;
             }
+            System.out.println("+-------------------------+"); // End table
             System.out.println(searchCount + " row(s) in the set.");
             searchCount = 0;
         break;
+        
         // Add new Pet oject to pets array list
         case 2:
-            System.out.println("add pet (name age): ");
-            String petName = select.next();
-            int petAge = select.nextInt();
-            pet = new Pet(petName, petAge);
-            pets.add(pet);
+            boolean addPet = true;
+            int petAge;
+            String petName;
             
+            // Loop to add new Pet objects to pets arrayList
+            while (addPet){
+                System.out.println("add pet (name age): ");
+                petName = select.next();
+                petAge = select.nextInt();
+                pet = new Pet(petName, petAge);
+                
+                // Checks if user is done adding Pets
+                if (petName.toLowerCase().trim().equals("done")){
+                    addPet = false;
+                } else {
+                    pets.add(pet);
+                }
+                
+            }
+            System.out.println("pets added.");
         break;
+        
         // Update existing Pet in pets arraylist
         case 3:
+            // Get pet to update
             System.out.println("Enter the pet ID to update: ");
             int petID = select.nextInt();
-            System.out.println("Enter new name and age (name age): ");
             
+            // Get new info
+            System.out.println("Enter new name and new age (name age): ");
             petName = select.next();
             petAge = select.nextInt();
             
+            // Display strings for user
             String oldEntry = pets.get(petID).getName() + " " + pets.get(petID).getAge();
             String newEntry = petName + " " + petAge;
             
+            // Update pet data
             pets.get(petID).setName(petName);
             pets.get(petID).setAge(petAge);
             System.out.println(oldEntry + " was changed to " + newEntry + ".");
         break;
+        
         // Remove existing Pet in pets arraylist
         case 4:
+            // Get pet ID to delete
             System.out.println("Enter the pet ID to remove: ");
             petID = select.nextInt();
+            
+            // Display string for user
             oldEntry = petID + " " + pets.get(petID).getName() + " " + pets.get(petID).getAge();
+            
+            // Delete pet data
             pets.remove(petID);
             System.out.println(oldEntry + " was removed.");
             
         break;
+        
         // Search for existing Pets by name in pets arraylist
         case 5:
             
@@ -107,19 +137,25 @@ public class Main {
             
             // Search pets arraylist for pets by name
             for (int i = 0; i < pets.size(); i++) {
-                if(pets.get(i).getName().equals(searchName)){
+                if(pets.get(i).getName().toLowerCase().equals(searchName.toLowerCase())){
                     if (searchCount < 1){
-                        System.out.println("ID | Name | Age");
+                        System.out.println("+-------------------------+");
+                        System.out.printf("| %-3s | %-10s | %-4s |%n","ID","NAME","AGE");
+                        System.out.println("+-------------------------+");
+                        
                     }
-                    System.out.printf("%s %s %s\n",i, pets.get(i).getName(), pets.get(i).getAge());
+                    System.out.printf("| %3s | %-10s | %4s |%n",i, pets.get(i).getName(), pets.get(i).getAge());
                     searchCount++;
                 }
             }
+            System.out.println("+-------------------------+"); // End of table
+            
             // Print number of search results 
             System.out.println(searchCount + " row(s) in the set.");
             searchCount = 0;
             
         break;
+        
         // Search for existing Pets by age in pets arraylist
         case 6:
             System.out.println("Enter an age to search: ");
@@ -130,21 +166,25 @@ public class Main {
             for (int i = 0; i < pets.size(); i++) {
                 if(pets.get(i).getAge() == searchAge){
                     if (searchCount < 1){
-                        System.out.println("ID | Name | Age");
+                        System.out.println("+-------------------------+");
+                        System.out.printf("| %-3s | %-10s | %-4s |%n","ID","NAME","AGE");
+                        System.out.println("+-------------------------+");
                     }
-                    System.out.printf("%s %s %s\n",i, pets.get(i).getName(), pets.get(i).getAge());
+                    System.out.printf("| %3s | %-10s | %4s |%n",i, pets.get(i).getName(), pets.get(i).getAge());
                     searchCount++;
                 }
             }
+            System.out.println("+-------------------------+"); // End of table
             
             // Print number of search results 
             System.out.println(searchCount + " row(s) in the set.");
             searchCount = 0;
             
         break;
+        
         // Exit program
         case 7:
-            run = false;
+            run = false; // Check for while loop
             System.out.println("Goodbye!");
         break;
         // If input is not an int between 1-7 direct user
@@ -153,6 +193,6 @@ public class Main {
     }
     // Newline before menu
     System.out.println();
-  }
+  } // End of while loop
  }
 }
