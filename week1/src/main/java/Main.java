@@ -1,40 +1,49 @@
 /*
  * Steven Wiltse
- * Assignment 1, Part 2
+ * Assignment 2, Part 2
  * Concordia St. Paul - SUMMER 100 CSC 422 Software Engineering
  * 
- * written: 05/12/2021
- * revised: 05/14/2021
- *          05/15/2021
+ * written: 05/20/2021
  */
 
  /**
-  * Pet database
+  * Pet database part 2 - Allow for saving and add error handling 
   */
 
 import java.util.Scanner; 
 import java.util.ArrayList;
+import java.io.File;  
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException; 
 
 public class Main {
   public static void main(String[] args) {
-  boolean run = true;
-  ArrayList<Pet> pets = new ArrayList<Pet>();
-  int searchCount = 0;
   
-  // Populate default pet data
-  Pet pet;
-  pet = new Pet("Kitty", 8);
-  pets.add(pet);
-  pet = new Pet("Bruno", 7);
-  pets.add(pet);
-  pet = new Pet("Boomer", 8);
-  pets.add(pet);
-  pet = new Pet("Boomer", 3);
-  pets.add(pet);
-  pet = new Pet("Fiesty", 3);
-  pets.add(pet);
+  // Create petDB.txt if it does not exist. 
+  // Used to save and load pet database data
+  // w3 tutorial for error handling: https://www.w3schools.com/java/java_files_create.asp
+  try {
+      File myObj = new File("petDB.txt");
+      myObj.createNewFile();
+      /* DEBUG
+      if (myObj.createNewFile()) {
+        System.out.println("File created: " + myObj.getName());
+      } else {
+        System.out.println("File already exists.");
+      }*/
+  } catch (IOException e) {
+      System.out.println("An error occurred.");
+      e.printStackTrace();
+  }
 
+  
+  // Class Vars
+  boolean run = true; // Tracks user interface menu to continue 
+  int searchCount = 0; // Tracks size of DB
   Scanner select = new Scanner(System.in);  // Create a Scanner object
+  ArrayList<Pet> pets = loadDB(); // Load DB text file into ArrayList
+  
   
   // User interface menu
   while(run){
@@ -70,6 +79,7 @@ public class Main {
         
         // Add new Pet oject to pets array list
         case 2:
+            Pet pet;
             boolean addPet = true;
             int petAge;
             String petName;
@@ -186,6 +196,7 @@ public class Main {
         case 7:
             run = false; // Check for while loop
             System.out.println("Goodbye!");
+            saveDB(pets);
         break;
         // If input is not an int between 1-7 direct user
         default:
@@ -194,5 +205,55 @@ public class Main {
     // Newline before menu
     System.out.println();
   } // End of while loop
+ 
  }
+  
+  // i/o methods for database
+  
+  // saveDB(): Sava Pet object arraylist to petDB text file
+  // Parameters: pets: ArrayList of Pet objects
+  public static void saveDB(ArrayList<Pet> pets){
+      try {
+          FileWriter myWriter = new FileWriter("petDB.txt");
+          for(Pet p: pets){
+              myWriter.write(p.toString() + "\n");
+          }
+          myWriter.close();
+          /* 
+          System.out.println("DEBUG: Successfully wrote to the file.");
+            */
+      } catch (IOException e) {
+          System.out.println("An error occurred.");
+          e.printStackTrace();
+      }
+  }
+
+
+  // loadDB(): Loads pet data from text file. Creates Pet objects from data 
+  //            and loads them into an ArrayList       
+  public static ArrayList<Pet> loadDB(){
+      
+      // Holds Pet objects created from text file
+      ArrayList<Pet> petDB = new ArrayList<Pet>();
+      
+      try {
+          // Load text file for pet DB
+          File myObj = new File("petDB.txt");
+          Scanner myReader = new Scanner(myObj);
+          
+          // Create Pet object from each line of pet data and load to petDB arr
+          while (myReader.hasNextLine()) {
+              String data = myReader.nextLine();
+              // Split data line into name(string), age(int) values for Pet object
+              String[] petVals = data.split(" ");
+              Pet pet = new Pet(petVals[0], Integer.parseInt(petVals[1]));
+              petDB.add(pet);
+          }
+          myReader.close();
+      } catch (FileNotFoundException e) {
+          System.out.println("An error occurred.");
+          e.printStackTrace();
+      }
+      return petDB;
+  }
 }

@@ -14,6 +14,7 @@
 public class Pet {
     private String petName;
     private int petAge;
+
     public Pet(){} // Default Constructor
     
     public Pet(String name, int age){
@@ -36,6 +37,6 @@ public class Pet {
     }
     // toString 
     public String toString(){
-        return "Name: " + petName + " " + "Age: " + petAge;
+        return  petName + " " + petAge;
     }
 }
