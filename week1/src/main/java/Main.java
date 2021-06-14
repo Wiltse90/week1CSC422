@@ -20,29 +20,27 @@ import java.io.IOException;
 public class Main {
   public static void main(String[] args) {
   
+  /***********************************************************
+   * Initialize database
+   ***********************************************************/
+  
   // Create petDB.txt if it does not exist. 
   // Used to save and load pet database data
   // w3 tutorial for error handling: https://www.w3schools.com/java/java_files_create.asp
   try {
       File myObj = new File("petDB.txt");
       myObj.createNewFile();
-      /* DEBUG
-      if (myObj.createNewFile()) {
-        System.out.println("File created: " + myObj.getName());
-      } else {
-        System.out.println("File already exists.");
-      }*/
   } catch (IOException e) {
-      System.out.println("An error occurred.");
+      System.out.println("An error has occurred while creating the database.");
       e.printStackTrace();
   }
 
   
-  // Class Vars
+  // Class Attributes
   boolean run = true; // Tracks user interface menu to continue 
-  int searchCount = 0; // Tracks size of DB
   Scanner select = new Scanner(System.in);  // Create a Scanner object
   ArrayList<Pet> pets = loadDB(); // Load DB text file into ArrayList
+
   
   
   // User interface menu
@@ -50,21 +48,20 @@ public class Main {
     System.out.println("What would you like to do?");
     System.out.println("1) View all pets");
     System.out.println("2) Add more pets");
-    System.out.println("3) Update an existing pet");
-    System.out.println("4) Remove an existing pet");
-    System.out.println("5) Search pets by name");
-    System.out.println("6) Search pets by age");
-    System.out.println("7) Exit program");
+    System.out.println("3) Remove an existing pet");
+    System.out.println("4) Exit program");
     
     // Read user input selection
     int userChoice = select.nextInt();
     System.out.println("\nYour choice: " + userChoice);
+    
     
     // Execute action based on user input
     switch(userChoice) {
         
         // Display all pets in pets arraylist
         case 1:
+            int searchCount = 0; // Tracks size of DB
             System.out.println("+-------------------------+"); // Table header
             System.out.printf("| %-3s | %-10s | %-4s |%n","ID","NAME","AGE");
             System.out.println("+-------------------------+");
@@ -75,132 +72,102 @@ public class Main {
             System.out.println("+-------------------------+"); // End table
             System.out.println(searchCount + " row(s) in the set.");
             searchCount = 0;
-        break;
+            break;
         
         // Add new Pet oject to pets array list
         case 2:
             Pet pet;
-            boolean addPet = true;
-            int petAge;
             String petName;
-            
+            int petAge;
+            int trackNewPets = 0;
+            boolean addPet = true;
+            Scanner add = new Scanner(System.in);  // Create a Scanner object
+
             // Loop to add new Pet objects to pets arrayList
             while (addPet){
                 System.out.println("add pet (name age): ");
-                petName = select.next();
-                petAge = select.nextInt();
-                pet = new Pet(petName, petAge);
+                String data = add.nextLine();
+
                 
+                String [] petData = data.split(" ");
+                // Error handling 
+               
                 // Checks if user is done adding Pets
-                if (petName.toLowerCase().trim().equals("done")){
+                if (petData[0].toLowerCase().trim().equals("done")){
                     addPet = false;
-                } else {
+                    System.out.println(trackNewPets + " pets added.");
+                    continue;
+                }
+                
+                
+                // Checks that second value is an integer between 1 and 20
+                try {
+                    petName = petData[0];
+                    petAge = Integer.parseInt(petData[1]);
+                    if(petAge < 1 || petAge > 20) {
+                        System.out.println("Error: " + petAge + " is not a valid age.");
+                        continue;
+                    }
+                    
+                } catch (Exception e) {
+                    System.out.println("Error: " + data + " is not a valid age.");
+                    continue;
+                }
+                
+                // Checks that the database will not have more than 5 entries
+                if (pets.size() >= 5) {
+                    System.out.println("Error: Database is full.");
+                    addPet = false;
+                    continue;
+                }
+                
+                // Checks that the entry has only 2 values
+                if (petData.length != 2){
+                    System.out.println("Error: " + data + " is not a valid input.");
+                    continue;
+                }
+                
+                // Create pet object and adds it to pets ArrayList
+                try{
+                    trackNewPets++;
+                    pet = new Pet(petName, petAge);
                     pets.add(pet);
+                } catch (Exception e){
+                    System.out.println("Error: Failed to add pet to database.");
                 }
                 
             }
-            System.out.println("pets added.");
-        break;
-        
-        // Update existing Pet in pets arraylist
-        case 3:
-            // Get pet to update
-            System.out.println("Enter the pet ID to update: ");
-            int petID = select.nextInt();
             
-            // Get new info
-            System.out.println("Enter new name and new age (name age): ");
-            petName = select.next();
-            petAge = select.nextInt();
-            
-            // Display strings for user
-            String oldEntry = pets.get(petID).getName() + " " + pets.get(petID).getAge();
-            String newEntry = petName + " " + petAge;
-            
-            // Update pet data
-            pets.get(petID).setName(petName);
-            pets.get(petID).setAge(petAge);
-            System.out.println(oldEntry + " was changed to " + newEntry + ".");
-        break;
-        
+            break;
+
         // Remove existing Pet in pets arraylist
-        case 4:
+        case 3:
             // Get pet ID to delete
             System.out.println("Enter the pet ID to remove: ");
-            petID = select.nextInt();
             
-            // Display string for user
-            oldEntry = petID + " " + pets.get(petID).getName() + " " + pets.get(petID).getAge();
+            int petID = select.nextInt();
             
-            // Delete pet data
-            pets.remove(petID);
-            System.out.println(oldEntry + " was removed.");
-            
-        break;
-        
-        // Search for existing Pets by name in pets arraylist
-        case 5:
-            
-            System.out.println("Enter a name to search: ");
-            String searchName = select.next();
-            System.out.println();
-            
-            // Search pets arraylist for pets by name
-            for (int i = 0; i < pets.size(); i++) {
-                if(pets.get(i).getName().toLowerCase().equals(searchName.toLowerCase())){
-                    if (searchCount < 1){
-                        System.out.println("+-------------------------+");
-                        System.out.printf("| %-3s | %-10s | %-4s |%n","ID","NAME","AGE");
-                        System.out.println("+-------------------------+");
-                        
-                    }
-                    System.out.printf("| %3s | %-10s | %4s |%n",i, pets.get(i).getName(), pets.get(i).getAge());
-                    searchCount++;
-                }
+            if(checkIndex(petID, pets)){
+                // Display string for user
+                String oldEntry = pets.get(petID).getName() + " " + pets.get(petID).getAge();
+                // Delete pet data
+                pets.remove(petID);
+                System.out.println(oldEntry + " was removed.");
+            } else {
+                System.out.println("ID " + petID + " does not exist.");
             }
-            System.out.println("+-------------------------+"); // End of table
-            
-            // Print number of search results 
-            System.out.println(searchCount + " row(s) in the set.");
-            searchCount = 0;
-            
-        break;
-        
-        // Search for existing Pets by age in pets arraylist
-        case 6:
-            System.out.println("Enter an age to search: ");
-            int searchAge = select.nextInt();
-            System.out.println();
-            
-            // Search pets arraylist for pets by age
-            for (int i = 0; i < pets.size(); i++) {
-                if(pets.get(i).getAge() == searchAge){
-                    if (searchCount < 1){
-                        System.out.println("+-------------------------+");
-                        System.out.printf("| %-3s | %-10s | %-4s |%n","ID","NAME","AGE");
-                        System.out.println("+-------------------------+");
-                    }
-                    System.out.printf("| %3s | %-10s | %4s |%n",i, pets.get(i).getName(), pets.get(i).getAge());
-                    searchCount++;
-                }
-            }
-            System.out.println("+-------------------------+"); // End of table
-            
-            // Print number of search results 
-            System.out.println(searchCount + " row(s) in the set.");
-            searchCount = 0;
-            
-        break;
+
+            break;
         
         // Exit program
-        case 7:
+        case 4:
             run = false; // Check for while loop
             System.out.println("Goodbye!");
             saveDB(pets);
-        break;
-        // If input is not an int between 1-7 direct user
+            break;
+        // If input is not an int between 1-4 direct user
         default:
-            System.out.println("Please enter a number from 1-7.");
+            System.out.println("Please enter a number from 1-4.");
     }
     // Newline before menu
     System.out.println();
@@ -208,10 +175,23 @@ public class Main {
  
  }
   
-  // i/o methods for database
+  // Checks if index is in arraylist
+  public static boolean checkIndex(int id, ArrayList list){
+      
+      try {
+          list.get(id);
+          return true;
+      } catch ( IndexOutOfBoundsException e ) {
+          return false;
+      }
+  }
   
+  // i/o methods for database file (petDB.txt)
+  
+  //***********************************************************
   // saveDB(): Sava Pet object arraylist to petDB text file
   // Parameters: pets: ArrayList of Pet objects
+  //***********************************************************
   public static void saveDB(ArrayList<Pet> pets){
       try {
           FileWriter myWriter = new FileWriter("petDB.txt");
@@ -228,9 +208,10 @@ public class Main {
       }
   }
 
-
+  //**************************************************************************
   // loadDB(): Loads pet data from text file. Creates Pet objects from data 
-  //            and loads them into an ArrayList       
+  //            and loads them into an ArrayList   
+  //**************************************************************************
   public static ArrayList<Pet> loadDB(){
       
       // Holds Pet objects created from text file
